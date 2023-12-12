@@ -44,4 +44,40 @@ class MysteriousResistor(Resistor):
 * Avoid side effects when using @property
 * Ensure @property methods are fast, for slow/complex work use regular methods
 
+### Item 45: Consider `@property` instead of refactoing attributes.
 
+*see item-45.py example*
+
+#### Things to remember
+
+* User `@property` to give existing instance attributes new functionalities.
+* Use `@property` to make incremental progress towards better data models.
+* Is you're using `@property` too much start considering refactoring.
+
+### Item 46: Use Descriptors for Reusable `@property` Methods
+
+The "Descriptor" protocol defines how attribute access is going to be interpreted by the language.
+A Descriptor Class provides `__set__` and `__get__` methods.
+
+*See Example "item-46.py"*
+
+What Python does when these "descriptor" attributes are accesed:
+
+```
+exam = Exam()  # here we're creating an instance of Exam class
+exam.writing_grade = 40  # here we're assigning 40 to the 'writing_grade' attribute'
+
+#  The above line is intepreted as:
+Exam.__dict__['writing_grade'].__set__(exam, 40)
+
+# When i retrieve the property
+exam.writing_grade
+
+# This gets translated into:
+Exam.__dict__['writing_grade'].__get__(exam, Exam)
+```
+
+### Things to Remember
+
+* Reuse the behavior and validation of `@property` methods by defining your own descriptor classes.
+* Use `WeakKeyDictionary` to ensure your descriptor classes don't cause memory leaks.
