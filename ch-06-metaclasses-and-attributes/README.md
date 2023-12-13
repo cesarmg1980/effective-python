@@ -77,7 +77,61 @@ exam.writing_grade
 Exam.__dict__['writing_grade'].__get__(exam, Exam)
 ```
 
-### Things to Remember
+#### Things to Remember
 
 * Reuse the behavior and validation of `@property` methods by defining your own descriptor classes.
 * Use `WeakKeyDictionary` to ensure your descriptor classes don't cause memory leaks.
+
+### Item 47: Use `__getattr__`, `__getattribute__` and `__setattr__` for Lazy Attributes 
+
+`__getattr` is a method that is called everytime an object's attribute can't be found in the object's dictionary.
+
+*See Example item-47.py*
+
+Python has another object hook called `__getattribute__`, this special method is called **every** time an attribute is called on an object, even if it already exists
+
+*See Example item-47.py*
+
+classes that implement `__getattr__` gets this method called only once while classes that implements `__getattribute__`  have this method called each time `hasattr` or `getattr` is used with an instance.
+
+*See Example #5 in item-47.py*
+
+`__setattr__` another object hook that allows you to intercept attribute assignment.
+the `__setattr__` is always called every time an attribute is assigned on an instance.
+
+`__getattr__` and `__setattr__` they're called on **every** attribute access for an object.
+
+```
+class BrokenDictionaryRecord:
+    def __init__(self data):
+        self.data = {}
+
+    def __getattribute__(self, name):
+        print(f"* Called __getattribute__({name!r})")
+        return self._data[name]
+
+# This requires accessing self._data from within the __getattribute__ 
+# which will result in recursion until reaches the stack limit.
+
+data = BrokenDictionaryRecord({"foo": 3})
+data.foo
+
+>>>
+* Called __getattribute__('foo')
+* Called __getattribute__('foo')
+* Called __getattribute__('foo')
+* Called __getattribute__('foo')
+...
+Traceback ...
+RecursionError: maximum recursion depth...
+```
+
+*See Example #7 for a working solution*
+
+Note: `__setattr__` methods also need to call `super().__setattr__` 
+
+### Things to remember
+
+* Use `__getattr__` and `__setattr__` to lazily load and save attributes for an object.
+* `__getattr__` **only** gets called when accessing a missing attribute, `__getattribute__` gets called **every** time an attribute is accessed.
+* Avoid infinite recursion in `__getattribute__` and `__setattr__` by using methods from `super()` i.e: `super().__getattribute__`
