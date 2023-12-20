@@ -135,3 +135,20 @@ Note: `__setattr__` methods also need to call `super().__setattr__`
 * Use `__getattr__` and `__setattr__` to lazily load and save attributes for an object.
 * `__getattr__` **only** gets called when accessing a missing attribute, `__getattribute__` gets called **every** time an attribute is accessed.
 * Avoid infinite recursion in `__getattribute__` and `__setattr__` by using methods from `super()` i.e: `super().__getattribute__`
+
+
+## Item 48: validate sublasses with __init__subclass__
+
+A `Metaclass` is defined by inheriting from `type`
+You can add functionality to the `Meta.__new__` in order to validate the parameters of a class before it's defined.
+Python 3.6 introduced `__init__subclass__()` to avoid the use of `Metaclass`
+You can only specify a single `metaclass` per class definition.
+Example 7, 8 and 8 shows that we can achieve multiple validations with `metaclass` but it's complicated and is you want to reuse this for another set of class hierarchies then you would need to duplicate all the code on the other set of classes.
+You can even use `__init__subclass__` in complex cases like diamond hierarchies.
+
+### Things to Remember
+
+* The `__new__` method of metaclasses is run after the entire class statement's entire body has been processed.
+* Metaclasses can be used to inspect/modify a class after it's defined but **before** it's created, but they're often more heavyweight than what you need.
+* Use `__init__subclass__` to ensure that subclasses are well formed at the time they're defined, before objects of their tipe are constructed.
+* Be sure to call `super().__init_subclass__` from within your class's `__init_subclass__` definition to enable validation in multiple layers of classes and multiple inheritance.
