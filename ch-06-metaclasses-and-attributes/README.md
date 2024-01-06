@@ -152,3 +152,15 @@ You can even use `__init__subclass__` in complex cases like diamond hierarchies.
 * Metaclasses can be used to inspect/modify a class after it's defined but **before** it's created, but they're often more heavyweight than what you need.
 * Use `__init__subclass__` to ensure that subclasses are well formed at the time they're defined, before objects of their tipe are constructed.
 * Be sure to call `super().__init_subclass__` from within your class's `__init_subclass__` definition to enable validation in multiple layers of classes and multiple inheritance.
+
+
+## Item 49: Register class existence with `__init_subclass__`
+
+*See Examples*
+
+### Things to Remember
+
+* Class registration is a useful pattern for building modular Python programs
+* Metaclasses let you run registration code automatically each time a base class is subclassed in a program.
+* Using metaclass for class registration helps you avoid errors like forgetting registering a class.
+* Prefer `__init_subclass__` over `metaclass` because it's clearer and easy to understand.
